@@ -1,0 +1,44 @@
+# Update system
+sudo dnf update -y
+
+# Install Java 21
+sudo dnf install java-21-amazon-corretto -y
+
+# Verify Java
+java -version
+
+# Create Jenkins repository
+sudo tee /etc/yum.repos.d/jenkins.repo > /dev/null <<EOF
+[jenkins]
+name=Jenkins
+baseurl=https://pkg.jenkins.io/redhat-stable
+enabled=1
+gpgcheck=0
+gpgkey=https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+EOF
+
+# Import Jenkins key (optional if gpgcheck=0)
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+
+# Clean cache
+sudo dnf clean all
+sudo rm -rf /var/cache/dnf
+sudo dnf makecache
+
+# Install Jenkins
+sudo dnf install jenkins -y
+
+# Reload systemd
+sudo systemctl daemon-reload
+
+# Enable Jenkins
+sudo systemctl enable jenkins
+
+# Start Jenkins
+sudo systemctl start jenkins
+
+# Check status
+sudo systemctl status jenkins
+
+# Get initial admin password
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
